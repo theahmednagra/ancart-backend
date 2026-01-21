@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import categoryModel from "../../models/category.model";
-import productModel from "../../models/product.model";
+import categoryModel from "../../../models/category.model";
+import productModel from "../../../models/product.model";
 import slugify from "slugify";
 
 export const createProduct = async (req: Request, res: Response) => {
