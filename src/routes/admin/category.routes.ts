@@ -8,8 +8,8 @@ import { listCategories } from "../../controllers/admin/category/listCategories.
 
 const router = Router();
 
-// router.use(authMiddleware);
-// router.use(authorizeRoles(["ADMIN"]));
+router.use(authMiddleware);
+router.use(authorizeRoles(["ADMIN"]));
 
 router.get("/", listCategories); // // done
 router.post("/", createCategory); // // done

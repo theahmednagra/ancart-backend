@@ -8,8 +8,8 @@ import { deactivateProduct } from "../../controllers/admin/product/deactivatePro
 
 const router = Router();
 
-// router.use(authMiddleware);
-// router.use(authorizeRoles(["ADMIN"]));
+router.use(authMiddleware);
+router.use(authorizeRoles(["ADMIN"]));
  
 router.get("/", listProducts); // // done
 router.post("/", createProduct); // // done
