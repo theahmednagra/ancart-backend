@@ -2,13 +2,15 @@ import { Request, Response } from "express";
 import categoryModel from "../../../models/category.model";
 import productModel from "../../../models/product.model";
 import slugify from "slugify";
+import { uploadToCloudinary } from "../../../utils/cloudinaryUpload";
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
         const { name, description, price, categoryId, stock } = req.body;
+        const image = req.file;
 
         // 1. Presence check
-        if (!name || !description || price === null || !categoryId || stock === null) {
+        if (!name || !description || !image || price === null || !categoryId || stock === null) {
             return res.status(404).json({
                 message: "Invalid product data",
             });
@@ -40,11 +42,15 @@ export const createProduct = async (req: Request, res: Response) => {
             });
         }
 
-        // 6. Create product
+        // 6. Upload image to cloudinary
+        const uploadResult = await uploadToCloudinary(image.buffer, "products")
+
+        // 7. Create product
         const product = await productModel.create({
             name,
             slug,
             description,
+            image: uploadResult.secure_url,
             price,
             category: category._id,
             stock,

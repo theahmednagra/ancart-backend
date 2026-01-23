@@ -2,11 +2,13 @@ import { Request, Response } from "express";
 import categoryModel from "../../../models/category.model";
 import { Types } from "mongoose";
 import slugify from "slugify";
+import { uploadToCloudinary } from "../../../utils/cloudinaryUpload";
 
 export const updateCategory = async (req: Request, res: Response) => {
     try {
         const { categoryId } = req.params;
         const { name, isActive } = req.body;
+        const image = req.file;
 
         // 1. Find category
         const category = await categoryModel.findById(categoryId);
@@ -35,16 +37,19 @@ export const updateCategory = async (req: Request, res: Response) => {
             category.slug = newSlug;
         }
 
+        // 3. Set image
+        if (image) {
+            const uploadResult = await uploadToCloudinary(image.buffer, "categories");
+            category.image = uploadResult.secure_url;
+        }
 
-        // 3. Set isActive
+        // 4. Set isActive
         if (typeof isActive === "boolean") {
             category.isActive = isActive;
         }
 
-        // 4. Save
         await category.save();
 
-        // 5. Response
         return res.status(200).json({
             message: "Category updated successfully",
             category,

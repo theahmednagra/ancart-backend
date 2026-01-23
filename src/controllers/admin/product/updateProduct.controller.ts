@@ -3,11 +3,13 @@ import productModel from "../../../models/product.model";
 import slugify from "slugify";
 import { Types } from "mongoose";
 import categoryModel from "../../../models/category.model";
+import { uploadToCloudinary } from "../../../utils/cloudinaryUpload";
 
 export const updateProduct = async (req: Request, res: Response) => {
     try {
         const { productId } = req.params;
         const { name, description, price, stock, categoryId, isActive } = req.body;
+        const image = req.file;
 
         // 1. Find product
         const product = await productModel.findById(productId);
@@ -39,7 +41,13 @@ export const updateProduct = async (req: Request, res: Response) => {
             product.description = description;
         }
 
-        // 4. Set price
+        // 4. Set image
+        if (image) {
+            const uploadResult = await uploadToCloudinary(image.buffer, "products");
+            product.image = uploadResult.secure_url;
+        }
+
+        // 5. Set price
         if (typeof price === "number") {
             if (price < 0) {
                 return res.status(400).json({ message: "Invalid price" });
@@ -47,7 +55,7 @@ export const updateProduct = async (req: Request, res: Response) => {
             product.price = price;
         }
 
-        // 5. Update stock
+        // 6. Update stock
         if (typeof stock === "number") {
             if (stock < 0) {
                 return res.status(400).json({ message: "Invalid stock value" });
@@ -55,7 +63,7 @@ export const updateProduct = async (req: Request, res: Response) => {
             product.stock = stock;
         }
 
-        // 6. Update category
+        // 7. Update category
         if (categoryId) {
             const category = await categoryModel.findOne({ _id: categoryId, isActive: true });
             if (!category) {
@@ -66,15 +74,13 @@ export const updateProduct = async (req: Request, res: Response) => {
             product.category = category._id;
         }
 
-        // 7. Set isActive
+        // 8. Set isActive
         if (typeof isActive === "boolean") {
-            product.isActive = !isActive;
+            product.isActive = isActive;
         }
 
-        // 8. Save
         await product.save();
 
-        // 9. Response
         return res.status(200).json({
             message: "Product updated successfully",
             product,

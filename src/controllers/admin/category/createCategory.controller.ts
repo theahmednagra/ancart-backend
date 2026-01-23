@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
 import categoryModel from "../../../models/category.model";
 import slugify from "slugify";
+import { uploadToCloudinary } from "../../../utils/cloudinaryUpload";
 
 export const createCategory = async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
+         const image = req.file;
 
-        if (!name) {
-            return res.status(404).json({
+        if (!name || !image) {
+            return res.status(400).json({
                 message: "Invalid category data",
             });
         }
@@ -21,7 +23,13 @@ export const createCategory = async (req: Request, res: Response) => {
             });
         }
 
-        const category = await categoryModel.create({ name, slug });
+        const uploadResult = await uploadToCloudinary(image.buffer, "categories");
+
+        const category = await categoryModel.create({
+            name,
+            slug,
+            image: uploadResult.secure_url,
+        });
 
         return res.status(201).json({
             message: "Category created",

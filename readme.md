@@ -1,52 +1,108 @@
-# Node.js E-Commerce Backend
+# Node.js E-Commerce Backend API
 
-A robust **Node.js backend** for an e-commerce platform, built with **Express**, **MongoDB**, and **JWT authentication**.  
-This project demonstrates modern backend architecture, secure role-based access, and complete e-commerce functionality.
+A **production-ready e-commerce backend** built with **Node.js, Express, MongoDB (Mongoose), and TypeScript**.  
+Designed with **real-world business logic**, **transaction safety**, **secure role-based access**, and **scalable architecture** in mind.
 
 ---
 
-## Features
+## Overview
 
-### Authentication & Roles
-- Secure **JWT-based authentication**
-- **Signup** with email verification
-- **Role-based access control** (`user`, `admin`)
-- Well-structured middleware separation
+This backend powers a complete e-commerce workflow including authentication, product & category management, search, cart handling, order processing, admin controls, image uploads, and transactional data safety.
 
-### Categories & Products
-- **Category CRUD** operations (admin-only)
-- **Product CRUD** operations (admin-only)
-- **Soft deletes** using `isActive` flag
-- Slug generation, schema references, and validation
-- Public product listing with safe user view
+It is **secure**, **scalable**, and **frontend-agnostic**.
+
+---
+
+## Core Features
+
+### Authentication & Authorization
+- JWT-based authentication
+- Email-verified user signup
+- Role-based access (**User**, **Admin**)
+- Clean, reusable middleware separation
+- Protected routes for sensitive operations
+
+---
+
+### Products & Categories
+- Admin-only CRUD operations
+- One image per product and category
+- Cloudinary-based image uploads
+- Soft deletes using `isActive`
+- SEO-friendly slug generation
+- Schema-level validation & references
+- Public, user-safe product listing
+- Indexed fields for scalable querying
+
+---
+
+### Product Search
+- Backend support for frontend search bar
+- Case-insensitive search
+- MongoDB indexing for performance
+- Pagination support
+- Public endpoint (no authentication)
+
+---
 
 ### Cart System
-- **One cart per user**
-- Add, remove, and clear items
-- No direct stock manipulation
+- One cart per user
+- Add, update, remove, and clear items
+- No stock manipulation at cart level
 - Live product data via `populate`
 - Authentication required
+- Cart auto-cleared after successful order
+
+---
 
 ### Orders
-- Create order directly from cart
+- Buy Now & Cart-based order creation
+- MongoDB transactions for rollback safety
 - Atomic stock enforcement
-- Order snapshot captures price and product details at purchase
-- User order listing and cancellation with stock restoration
-- Admin control over order status
+- Order snapshot (product name, price, quantity frozen)
+- Delivery address stored per order
+- User order history
+- User-initiated cancellation with stock restoration
+- Strict order state validation
+
+---
 
 ### Admin Order Management
-- List all orders
-- View single order with user and items
-- Securely update order status
+- View and manage all orders
+- Secure order status updates
+- Admin-initiated order cancellation
+- Admin identity tracked
+- Controlled order status transitions
+
+---
+
+### Transactions & Data Consistency
+MongoDB sessions and transactions ensure:
+- Consistent order creation
+- Safe stock deduction
+- Reliable cart clearing
+- Order cancellation rollback
+- Prevention of partial writes
+
+---
+
+### Image Handling
+- Multer (memory storage)
+- Cloudinary integration
+- Automatic folder creation
+- Image replacement supported
+- Images not stored in MongoDB
+- Optimized for scalability
 
 ---
 
 ## Tech Stack
-- **Node.js** and **Express**
-- **MongoDB** with **Mongoose**
-- **JWT Authentication**
-- Middleware for role-based access control
-- Email verification using Nodemailer
+- Node.js & Express
+- TypeScript
+- MongoDB & Mongoose
+- JWT Authentication
+- Multer & Cloudinary
+- REST API architecture
 
 ---
 
@@ -61,11 +117,15 @@ cd ancart-backend
 npm install
 
 # Create a .env file with your environment variables
-# Example:
-# DB_URI=your_mongo_connection_string
-# JWT_SECRET=your_jwt_secret
-# EMAIL_USER=your_email
-# EMAIL_PASS=your_email_password
+# Example:  
+PORT=your_port_number
+DB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+GMAIL_USER=your_email_account
+GMAIL_PASS=your_email_password
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 # Start development server
 npm run dev

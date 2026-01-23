@@ -1,13 +1,14 @@
 import { Schema, Document, Types, model } from "mongoose";
 
 export interface IProduct extends Document {
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  category: Types.ObjectId;
-  stock: number;
-  isActive: boolean;
+    name: string;
+    slug: string;
+    description: string;
+    image: string;
+    price: number;
+    category: Types.ObjectId;
+    stock: number;
+    isActive: boolean;
 }
 
 const productSchema = new Schema<IProduct>(
@@ -24,6 +25,10 @@ const productSchema = new Schema<IProduct>(
             lowercase: true,
         },
         description: {
+            type: String,
+            required: true,
+        },
+        image: {
             type: String,
             required: true,
         },
@@ -46,10 +51,12 @@ const productSchema = new Schema<IProduct>(
             type: Boolean,
             default: true,
         },
-    }, 
+    },
     {
         timestamps: true,
     }
 );
+
+productSchema.index({ name: 1 });
 
 export default model<IProduct>("Product", productSchema);
