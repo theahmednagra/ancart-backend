@@ -44,7 +44,7 @@ export const updateCategory = async (req: Request, res: Response) => {
         }
 
         // 4. Set isActive
-        if (typeof isActive === "boolean") {
+        if (isActive === "true" || isActive === "false") {
             category.isActive = isActive;
         }
 

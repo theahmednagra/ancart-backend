@@ -48,7 +48,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         }
 
         // 5. Set price
-        if (typeof price === "number") {
+        if (price) {
             if (price < 0) {
                 return res.status(400).json({ message: "Invalid price" });
             }
@@ -56,7 +56,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         }
 
         // 6. Update stock
-        if (typeof stock === "number") {
+        if (stock) {
             if (stock < 0) {
                 return res.status(400).json({ message: "Invalid stock value" });
             }
@@ -75,7 +75,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         }
 
         // 8. Set isActive
-        if (typeof isActive === "boolean") {
+        if (isActive === "true" || isActive === "false") {
             product.isActive = isActive;
         }
 

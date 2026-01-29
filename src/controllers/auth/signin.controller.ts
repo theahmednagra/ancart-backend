@@ -58,6 +58,7 @@ export const signinController = async (req: Request, res: Response) => {
                 id: user._id,
                 fullname: user.fullname,
                 email: user.email,
+                role: user.role,
             },
         });
     } catch (error) {

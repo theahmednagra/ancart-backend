@@ -22,7 +22,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
         // 3. Attach user info to request
         (req as any).user = {
-            userId: decoded.userId,
+            id: decoded.userId,  // Changed key "userId" to "id"
             role: decoded.role,
         };
 

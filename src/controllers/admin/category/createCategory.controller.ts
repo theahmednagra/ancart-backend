@@ -6,7 +6,7 @@ import { uploadToCloudinary } from "../../../utils/cloudinaryUpload";
 export const createCategory = async (req: Request, res: Response) => {
     try {
         const { name } = req.body;
-         const image = req.file;
+        const image = req.file;
 
         if (!name || !image) {
             return res.status(400).json({
