@@ -5,7 +5,7 @@ export const getProductById = async (req: Request, res: Response) => {
     try {
         const { productId } = req.params;
 
-        const product = await productModel.findById(productId)
+        const product = await productModel.findById(productId).populate("category", "_id name")
 
         if (!product || !product.isActive) {
             return res.status(404).json({

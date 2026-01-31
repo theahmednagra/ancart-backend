@@ -4,7 +4,7 @@ import categoryModel from "../../../models/category.model";
 export const listPublicCategories = async (req: Request, res: Response) => {
     try {
         const categories = await categoryModel.find({ isActive: true })
-            .select("name slug")
+            .select("_id name image slug")
             .sort({ name: -1 });
             
         return res.status(200).json({

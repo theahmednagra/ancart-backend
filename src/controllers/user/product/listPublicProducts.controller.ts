@@ -4,7 +4,7 @@ import productModel from "../../../models/product.model";
 export const listPublicProducts = async (req: Request, res: Response) => {
     try {
         const page = Math.max(Number(req.query.page) || 1, 1);
-        const limit = Math.min(Number(req.query.limit) || 10, 50);
+        const limit = Math.min(Number(req.query.limit) || 50, 50);
         const skip = (page - 1) * limit;
 
         const products = await productModel.find({ isActive: true, stock: { $gt: 0 } })
