@@ -14,13 +14,19 @@ export interface IOrderAddress {
     city: string;
 }
 
+export interface IAdminCancelled {
+    adminId: Types.ObjectId;
+    name: string;
+    email: string;
+}
+
 export interface IOrder extends Document {
     user: Types.ObjectId;
     items: IOrderItem[];
     deliveryAddress: IOrderAddress;
     totalAmount: number;
     status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
-    cancelledBy: Types.ObjectId;
+    cancelledBy: IAdminCancelled;
     cancelReason: string;
     cancelledAt: Date;
 }
@@ -82,8 +88,12 @@ const orderSchema = new Schema<IOrder>(
             default: "PENDING",
         },
         cancelledBy: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
+            adminId: {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+            },
+            name: String,
+            email: String,
         },
         cancelReason: {
             type: String,

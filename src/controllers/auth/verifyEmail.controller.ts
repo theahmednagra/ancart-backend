@@ -4,6 +4,7 @@ import userModel from "../../models/user.model";
 export const verifyEmail = async (req: Request, res: Response) => {
     try {
         const { email, code } = req.body;
+        console.log(email, code)
 
         // 1. Presence check
         if (!email || !code) {

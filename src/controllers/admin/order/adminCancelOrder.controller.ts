@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import mongoose, { Types } from "mongoose";
-import orderModel from "../../../models/order.model";
+import orderModel, { IAdminCancelled } from "../../../models/order.model";
 import productModel from "../../../models/product.model";
+import userModel from "../../../models/user.model";
 
 export const adminCancelOrder = async (req: Request, res: Response) => {
     const session = await mongoose.startSession();
@@ -43,9 +44,23 @@ export const adminCancelOrder = async (req: Request, res: Response) => {
             }
         }
 
+        const admin = await userModel
+            .findById(adminId)
+            .select("_id name email");
+
+        if (!admin) {
+            throw new Error("Admin not found");
+        }
+
+        const cancelledBy: IAdminCancelled = {
+            adminId: admin._id,
+            name: admin.fullname,
+            email: admin.email,
+        };
+
         // Update order state + audit fields
         order.status = "CANCELLED";
-        order.cancelledBy = new Types.ObjectId(adminId);
+        order.cancelledBy = cancelledBy;
         order.cancelReason = reason;
         order.cancelledAt = new Date();
 

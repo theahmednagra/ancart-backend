@@ -6,7 +6,7 @@ export const getMyInfo = async (req: Request, res: Response) => {
         const userId = req.user!.id;
 
         const user = await userModel.findById(userId).select(
-            "_id fullname email role"
+            "_id fullname email role status"
         );
 
         if (!user) {
@@ -21,6 +21,7 @@ export const getMyInfo = async (req: Request, res: Response) => {
                 fullname: user.fullname,
                 email: user.email,
                 role: user.role,
+                status: user.status,
             }
         });
     } catch (error) {

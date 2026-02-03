@@ -28,6 +28,7 @@ export const signinController = async (req: Request, res: Response) => {
         // 3. Block unverified users
         if (user?.status === "UNVERIFIED") {
             return res.status(403).json({
+                code: "NOT_VERIFIED",
                 message: "Please verify your account before signin",
             });
         }
@@ -59,6 +60,7 @@ export const signinController = async (req: Request, res: Response) => {
                 fullname: user.fullname,
                 email: user.email,
                 role: user.role,
+                status: user.status,
             },
         });
     } catch (error) {
