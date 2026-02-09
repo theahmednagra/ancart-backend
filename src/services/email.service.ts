@@ -3,15 +3,20 @@ import nodemailer from "nodemailer";
 export const sendVerificationEmail = async (email: string, code: string | undefined) => {
     try {
         const transporter = nodemailer.createTransport({
-            service: "Gmail",
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
             auth: {
                 user: process.env.GMAIL_USER,
                 pass: process.env.GMAIL_PASS,
-            }
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
         });
 
         const mailOptions = {
-            from: process.env.GMAIL_USER,
+            from: `"Ancart" <${process.env.GMAIL_USER}>`,
             to: email,
             subject: "Email verification for your account",
             html: `
