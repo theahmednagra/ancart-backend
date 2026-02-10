@@ -2,21 +2,22 @@ import nodemailer from "nodemailer";
 
 export const sendVerificationEmail = async (email: string, code: string | undefined) => {
     try {
+        if (!code) {
+            throw new Error("Verification code missing");
+        }
+
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
+            host: "smtp-relay.brevo.com",
             port: 587,
             secure: false,
             auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_PASS,
-            },
-            tls: {
-                rejectUnauthorized: false,
+                user: process.env.BREVO_USER,
+                pass: process.env.BREVO_SMTP_KEY,
             },
         });
 
         const mailOptions = {
-            from: `"Ancart" <${process.env.GMAIL_USER}>`,
+            from: `"Ancart" <${process.env.BREVO_EMAIL}>`,
             to: email,
             subject: "Email verification for your account",
             html: `
