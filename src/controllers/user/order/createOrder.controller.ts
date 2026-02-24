@@ -12,8 +12,6 @@ export const createOrder = async (req: Request, res: Response) => {
         const { deliveryAddress } = req.body;
         const { items } = req.body;
 
-        console.log(deliveryAddress, items)
-
         // Delivery address validation
         if (!deliveryAddress) {
             throw new Error("Delivery address is required");

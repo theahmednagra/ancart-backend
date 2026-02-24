@@ -7,7 +7,7 @@ export const getUserOrders = async (req: Request, res: Response) => {
 
         const orders = await orderModel.find({ user: userId })
             .sort({ createdAt: -1 })
-            .populate("items.product", "name slug");
+            .populate("items.product", "name slug image");
 
         return res.status(200).json({
             success: true,
