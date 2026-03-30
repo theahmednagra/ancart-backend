@@ -5,7 +5,7 @@ export const listPublicCategories = async (req: Request, res: Response) => {
     try {
         const categories = await categoryModel.find({ isActive: true })
             .select("_id name image slug")
-            .sort({ name: -1 });
+            .sort({ createdAt: 1 });
             
         return res.status(200).json({
             categories,
