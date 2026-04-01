@@ -33,9 +33,22 @@ export const addToCart = async (req: Request, res: Response) => {
             const itemIndex = cart.items.findIndex((item) => item.product.toString() === productId);
 
             if (itemIndex > -1) {
-                cart.items[itemIndex].quantity += quantity;
+                const newQuantity = cart.items[itemIndex].quantity + quantity;
+
+                if (newQuantity > product.stock) {
+                    return res.status(400).json({
+                        message: `Max stock is ${product.stock}, you already have ${cart.items[itemIndex].quantity} in cart.`,
+                    });
+                }
+
+                cart.items[itemIndex].quantity = newQuantity;
 
             } else {
+
+                if (quantity > product.stock) {
+                    return res.status(400).json({ message: `Only ${product.stock} items available` });
+                }
+                
                 cart.items.push({ product: productId, quantity });
             }
 
