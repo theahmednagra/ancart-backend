@@ -24,7 +24,7 @@ export const cancelOrder = async (req: Request, res: Response) => {
         }
 
         // Only allow cancellation if order is pending or confirmed
-        if (!["PENDING", "CONFIRMED"].includes(order.status)) {
+        if (!["PAYMENT_PENDING", "PENDING", "CONFIRMED"].includes(order.status)) {
             throw new Error("Cannot cancel at this stage");
         }
 

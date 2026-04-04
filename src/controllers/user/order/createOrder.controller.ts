@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import productModel from "../../../models/product.model";
 import orderModel from "../../../models/order.model";
+import { createPaymentService } from "../../../services/payment.service";
 
 export const createOrder = async (req: Request, res: Response) => {
     const session = await mongoose.startSession();
@@ -9,23 +10,28 @@ export const createOrder = async (req: Request, res: Response) => {
 
     try {
         const userId = req.user!.id;
-        const { deliveryAddress } = req.body;
+        const { orderData } = req.body;
         const { items } = req.body;
 
-        // Delivery address validation
-        if (!deliveryAddress) {
-            throw new Error("Delivery address is required");
+        // Order data validation
+        if (!orderData) {
+            throw new Error("Order data is required");
         }
 
-        const { fullName, phone, addressLine, city } = deliveryAddress;
+        const { fullName, phone, addressLine, city, paymentMethod } = orderData;
 
         if (!fullName?.trim() || !phone?.trim() || !addressLine?.trim() || !city?.trim()) {
-            throw new Error("Invalid delivery address data")
+            throw new Error("Invalid order data")
         }
 
         // Items validation
         if (!items || !items.length) {
             throw new Error("Invalid order items data");
+        }
+
+        // Payment method validation
+        if (!paymentMethod) {
+            throw new Error("Invalid payment method data");
         }
 
         let totalAmount = 0;
@@ -53,11 +59,11 @@ export const createOrder = async (req: Request, res: Response) => {
             });
         }
 
-        const order = await orderModel.create(
+        const [order] = await orderModel.create(
             [{
                 user: userId,
                 items: orderItems,
-                deliveryAddress,
+                orderData,
                 totalAmount,
                 status: "PENDING",
             }],
@@ -66,9 +72,23 @@ export const createOrder = async (req: Request, res: Response) => {
 
         await session.commitTransaction();
 
+        if (paymentMethod === "CARD") {
+            const { payment, checkoutUrl } = await createPaymentService(userId, { orderId: order._id.toString() });
+
+            order.status = "PAYMENT_PENDING";
+            await order.save();
+
+            return res.status(201).json({
+                message: "Order placed! Please confirm your payment",
+                order,
+                payment,
+                checkoutUrl,
+            })
+        }
+
         return res.status(201).json({
             message: "Order placed successfully",
-            data: order[0],
+            order,
         });
 
     } catch (error) {

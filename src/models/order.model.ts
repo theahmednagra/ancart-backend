@@ -7,11 +7,12 @@ export interface IOrderItem {
     quantity: number;
 }
 
-export interface IOrderAddress {
+export interface IOrderData {
     fullName: string;
     phone: string;
     addressLine: string;
     city: string;
+    paymentMethod: "COD" | "CARD";
 }
 
 export interface IAdminCancelled {
@@ -23,9 +24,9 @@ export interface IAdminCancelled {
 export interface IOrder extends Document {
     user: Types.ObjectId;
     items: IOrderItem[];
-    deliveryAddress: IOrderAddress;
+    orderData: IOrderData;
     totalAmount: number;
-    status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+    status:   "PAYMENT_PENDING" |"PAID" |"PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
     cancelledBy: IAdminCancelled;
     cancelReason: string;
     cancelledAt: Date;
@@ -59,7 +60,7 @@ const orderSchema = new Schema<IOrder>(
                 }
             }
         ],
-        deliveryAddress: {
+        orderData: {
             fullName: {
                 type: String,
                 required: true,
@@ -76,7 +77,11 @@ const orderSchema = new Schema<IOrder>(
             city: {
                 type: String,
                 required: true,
-            }
+            },
+            paymentMethod: {
+                type: String,
+                enum: ["COD", "CARD"],
+            },
         },
         totalAmount: {
             type: Number,
@@ -84,7 +89,7 @@ const orderSchema = new Schema<IOrder>(
         },
         status: {
             type: String,
-            enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
+            enum: ["PAYMENT_PENDING", "PAID", "PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
             default: "PENDING",
         },
         cancelledBy: {
