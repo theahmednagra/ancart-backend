@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { addToCart } from "../../controllers/user/cart/addToCart.controller";
-import { getCart } from "../../controllers/user/cart/getCart.controller";
 import { clearCart } from "../../controllers/user/cart/clearCart.controller";
 import { removeFromCart } from "../../controllers/user/cart/removeFromCart.controller";
 import { updateCartQuantity } from "../../controllers/user/cart/updateCartQuantity.controller";
+import { getCart } from "../../controllers/user/cart/getCart.controller";
 
 const router = Router();
 

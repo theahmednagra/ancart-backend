@@ -8,6 +8,7 @@ import userProductRoutes from "./routes/user/public.product.routes";
 import userCategoryRoutes from "./routes/user/public.category.routes";
 import userOrderRoutes from "./routes/user/user.order.routes";
 import userCartRoutes from "./routes/user/user.cart.routes";
+import paymentRoutes from "./routes/payment/payment.routes";
 
 const app = express();
 
@@ -31,5 +32,7 @@ app.use("/api/user/products", userProductRoutes);
 app.use("/api/cart", userCartRoutes);
 app.use("/api/orders", userOrderRoutes);
 
+// Payment routes
+app.use("/api/payment", paymentRoutes);
 
 export default app;
