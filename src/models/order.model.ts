@@ -26,7 +26,7 @@ export interface IOrder extends Document {
     items: IOrderItem[];
     orderData: IOrderData;
     totalAmount: number;
-    status:   "PAYMENT_PENDING" |"PAID" |"PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+    status: "PENDING" | "PAID" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
     cancelledBy: IAdminCancelled;
     cancelReason: string;
     cancelledAt: Date;
@@ -89,7 +89,7 @@ const orderSchema = new Schema<IOrder>(
         },
         status: {
             type: String,
-            enum: ["PAYMENT_PENDING", "PAID", "PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
+            enum: ["PENDING", "PAID", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
             default: "PENDING",
         },
         cancelledBy: {
