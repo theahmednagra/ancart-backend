@@ -23,9 +23,15 @@ export const cancelOrder = async (req: Request, res: Response) => {
             throw new Error("Order already cancelled");
         }
 
-        // Only allow cancellation if order is pending or confirmed
-        if (!["PAYMENT_PENDING", "PENDING", "CONFIRMED"].includes(order.status)) {
-            throw new Error("Cannot cancel at this stage");
+        // Only allow cancellation if payment method is COD and status is pending or confirmed
+        const allowedStatuses = [];
+
+        if (order.orderData.paymentMethod === "COD") {
+            allowedStatuses.push("CONFIRMED", "PENDING");
+        }
+
+        if (!allowedStatuses.includes(order.status)) {
+            throw new Error("Cannot cancel this order");
         }
 
         // Restore stock

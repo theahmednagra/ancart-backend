@@ -75,9 +75,6 @@ export const createOrder = async (req: Request, res: Response) => {
         if (paymentMethod === "CARD") {
             const { payment, checkoutUrl } = await createPaymentService(userId, { orderId: order._id.toString() });
 
-            order.status = "PAYMENT_PENDING";
-            await order.save();
-
             return res.status(201).json({
                 message: "Order placed! Please confirm your payment",
                 order,

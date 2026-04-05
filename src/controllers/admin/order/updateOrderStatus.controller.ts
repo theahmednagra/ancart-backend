@@ -31,7 +31,23 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 
         const currentStatus = order.status;
 
-        const allowedNextStatuses = STATUS_FLOW[currentStatus];
+        // Prevent using this route for cancellations to ensure stock is restored via the correct controller
+        if (newStatus === "CANCELLED") {
+            return res.status(400).json({
+                message: "Please use the specialized cancellation route to cancel this order.",
+            });
+        }
+
+        // Block Admin from confirming a CARD order that hasn't been paid yet
+        if (currentStatus === "PENDING" && newStatus === "CONFIRMED") {
+            if (order.orderData.paymentMethod === "CARD") {
+                return res.status(403).json({
+                    message: "Cannot confirm a CARD order manually while it is PENDING. Payment must be completed first.",
+                });
+            }
+        }
+
+        const allowedNextStatuses = STATUS_FLOW[currentStatus] || [];
 
         if (!allowedNextStatuses.includes(newStatus)) {
             return res.status(400).json({
