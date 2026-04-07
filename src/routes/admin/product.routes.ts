@@ -8,12 +8,14 @@ import { updateProduct } from "../../controllers/admin/product/updateProduct.con
 import { deactivateProduct } from "../../controllers/admin/product/deactivateProduct.controller";
 import { getProductsByCategory } from "../../controllers/admin/product/getProductsByCategory.controller";
 import { getProductById } from "../../controllers/admin/product/getProductById.controller";
+import { searchProducts } from "../../controllers/admin/product/adminSearchProducts.controller";
 
 const router = Router();
 
 router.use(authMiddleware);
 router.use(authorizeRoles(["ADMIN"]));
 
+router.get("/search-products", searchProducts);
 router.get("/get-all-products", listProducts); // done
 router.get("/get-products-by-category/:categoryId", getProductsByCategory);
 router.get("/get-product-by-id/:productId", getProductById);

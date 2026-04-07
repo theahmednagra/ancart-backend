@@ -1,4 +1,7 @@
 import { Schema, Document, model, Types } from "mongoose";
+import counterModel from "./counter.model";
+
+// INTERFACES
 
 export interface IOrderItem {
     product: Types.ObjectId;
@@ -22,6 +25,7 @@ export interface IAdminCancelled {
 }
 
 export interface IOrder extends Document {
+    orderId: string;
     user: Types.ObjectId;
     items: IOrderItem[];
     orderData: IOrderData;
@@ -30,15 +34,43 @@ export interface IOrder extends Document {
     cancelledBy: IAdminCancelled;
     cancelReason: string;
     cancelledAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
+
+// HELPER FUNCTIONS
+
+// atomic counter (SAFE for concurrent requests)
+const getNextOrderSequence = async () => {
+    const counter = await counterModel.findOneAndUpdate(
+        { name: "order" },
+        { $inc: { value: 1 } },
+        { new: true, upsert: true }
+    );
+
+    return counter.value;
+};
+
+const formatOrderId = (seq: number) => {
+    return seq.toString().padStart(6, "0");
+};
+
+// SCHEMA
 
 const orderSchema = new Schema<IOrder>(
     {
+        orderId: {
+            type: String,
+            unique: true,
+            index: true,
+        },
+
         user: {
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
+
         items: [
             {
                 product: {
@@ -57,9 +89,10 @@ const orderSchema = new Schema<IOrder>(
                 quantity: {
                     type: Number,
                     required: true,
-                }
-            }
+                },
+            },
         ],
+
         orderData: {
             fullName: {
                 type: String,
@@ -81,17 +114,21 @@ const orderSchema = new Schema<IOrder>(
             paymentMethod: {
                 type: String,
                 enum: ["COD", "CARD"],
+                required: true,
             },
         },
+
         totalAmount: {
             type: Number,
             required: true,
         },
+
         status: {
             type: String,
             enum: ["PENDING", "PAID", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
             default: "PENDING",
         },
+
         cancelledBy: {
             adminId: {
                 type: Schema.Types.ObjectId,
@@ -100,112 +137,31 @@ const orderSchema = new Schema<IOrder>(
             name: String,
             email: String,
         },
-        cancelReason: {
-            type: String,
-        },
-        cancelledAt: {
-            type: Date,
-        }
+
+        cancelReason: String,
+
+        cancelledAt: Date,
     },
     {
         timestamps: true,
     }
 );
 
+// AUTO ORDER ID
+
+orderSchema.pre("save", async function () {
+    if (!this.orderId) {
+        const seq = await getNextOrderSequence();
+        this.orderId = formatOrderId(seq);
+    }
+});
+
+// INDEXES
+
+// fast search + admin sorting
+orderSchema.index({ orderId: 1 });
+orderSchema.index({ createdAt: -1 });
+
+// EXPORT
+
 export default model<IOrder>("Order", orderSchema);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const orderItemSchema = new Schema(
-//   {
-//     product: {
-//       type: Types.ObjectId,
-//       ref: "Product",
-//       required: true,
-//     },
-//     name: {
-//       type: String,
-//       required: true,
-//     },
-//     price: {
-//       type: Number,
-//       required: true,
-//     },
-//     quantity: {
-//       type: Number,
-//       required: true,
-//       min: 1,
-//     },
-//   },
-//   { _id: false }
-// );
-
-// const orderSchema = new Schema(
-//   {
-//     user: {
-//       type: Types.ObjectId,
-//       ref: "User",
-//       required: true,
-//     },
-
-//     items: {
-//       type: [orderItemSchema],
-//       required: true,
-//     },
-
-//     totalAmount: {
-//       type: Number,
-//       required: true,
-//     },
-
-//     status: {
-//       type: String,
-//       enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
-//       default: "PENDING",
-//     },
-
-//     paymentMethod: {
-//       type: String,
-//       enum: ["COD"],
-//       default: "COD",
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// export default model("Order", orderSchema);

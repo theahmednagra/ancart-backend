@@ -15,7 +15,7 @@ export interface IPayment extends Document {
     updatedAt: Date;
 }
 
-const PaymentSchema = new Schema<IPayment>(
+const paymentSchema = new Schema<IPayment>(
     {
         userId: {
             type: Schema.Types.ObjectId,
@@ -63,6 +63,6 @@ const PaymentSchema = new Schema<IPayment>(
 );
 
 // important indexes
-PaymentSchema.index({ orderId: 1 }); // fast lookup for order
+paymentSchema.index({ orderId: 1 }); // fast lookup for order
 
-export default mongoose.models.Payment || model<IPayment>("Payment", PaymentSchema);
+export default mongoose.models.Payment || model<IPayment>("Payment", paymentSchema);

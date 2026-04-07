@@ -14,7 +14,7 @@ export const searchProducts = async (req: Request, res: Response) => {
             });
         }
 
-        const products = await productModel.find({ isActive: true, stock: { $gt: 0 }, name: { $regex: searchQuery, $options: "i" } })
+        const products = await productModel.find({ name: { $regex: searchQuery, $options: "i" } })
             .populate("category", "name slug")
             .skip(skip)
             .limit(limit)
@@ -22,7 +22,7 @@ export const searchProducts = async (req: Request, res: Response) => {
 
         return res.status(200).json({
             page,
-            data: products,
+            products,
         });
 
     } catch (error) {
